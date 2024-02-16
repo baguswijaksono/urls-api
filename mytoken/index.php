@@ -7,7 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'];
 
     // Prepare an SQL statement to fetch user data based on the provided email
-    $stmt = $conn->prepare("SELECT password, token FROM users WHERE email = ?");
+    $stmt = $conn->prepare("SELECT password, token , username FROM users WHERE email = ?");
 
     // Bind parameters to prevent SQL injection
     $stmt->bind_param("s", $email);
@@ -23,9 +23,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Verify the provided password with the hashed password from the database
         if (password_verify($password, $hashedPassword)) {
             $userToken = $row['token'];
+            $userName = $row['username'];
 
             http_response_code(200);
-            $response = array("user_token" => $userToken);
+            $response = array("user_token" => $userToken,"user_name" => $userName);
             echo json_encode($response);
         } else {
             http_response_code(401); // Unauthorized
